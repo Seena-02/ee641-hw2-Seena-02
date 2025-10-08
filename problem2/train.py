@@ -16,6 +16,13 @@ from dataset import DrumPatternDataset
 from hierarchical_vae import HierarchicalDrumVAE
 from training_utils import kl_annealing_schedule, temperature_annealing_schedule
 
+class CustomEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, torch.device):
+            return str(obj)
+        # Add more custom conversions here if needed
+        return super().default(obj)
+
 def compute_hierarchical_elbo(recon_x, x, mu_low, logvar_low, mu_high, logvar_high, beta=1.0):
     """
     Compute Evidence Lower Bound (ELBO) for hierarchical VAE.
@@ -117,7 +124,7 @@ def main():
     """
     # Configuration
     config = {
-        'device': torch.device('cuda' if torch.cuda.is_available() else 'cpu'),
+        'device': torch.device('mps' if torch.mps.is_available() else 'cpu'),
         'batch_size': 32,
         'num_epochs': 100,
         'learning_rate': 0.001,
@@ -223,7 +230,7 @@ def main():
     torch.save(model.state_dict(), f"{config['results_dir']}/best_model.pth")
     
     with open(f"{config['results_dir']}/training_log.json", 'w') as f:
-        json.dump(history, f, indent=2)
+        json.dump(history, f, indent=2, cls=CustomEncoder)
     
     print(f"Training complete. Results saved to {config['results_dir']}/")
 

@@ -24,18 +24,14 @@ def plot_alphabet_grid(generator, device='mps', z_dim=100, seed=None):
     if seed is not None:
         torch.manual_seed(seed)
         np.random.seed(seed)
-    
     generator.eval()
     fig = plt.figure(figsize=(13, 10))
     gs = gridspec.GridSpec(4, 7, figure=fig)
-    
     with torch.no_grad():
         for i in range(26):
             ax = fig.add_subplot(gs[i // 7, i % 7])
-            
             # Generate random z
             z = torch.randn(1, z_dim).to(device)
-            
             # Generate image
             if hasattr(generator, 'conditional') and generator.conditional:
                 # Conditional GAN - provide letter label
@@ -45,10 +41,8 @@ def plot_alphabet_grid(generator, device='mps', z_dim=100, seed=None):
             else:
                 # Unconditional - just generate
                 fake_img = generator(z).squeeze().cpu()
-            
             # Convert from [-1, 1] to [0, 1] for display
             fake_img = (fake_img + 1) / 2
-            
             ax.imshow(fake_img, cmap='gray', vmin=0, vmax=1)
             ax.set_title(chr(65 + i), fontsize=12)
             ax.axis('off')
@@ -69,8 +63,7 @@ def plot_training_history(history, save_path=None):
         figure: Matplotlib figure object
     """
     fig, axes = plt.subplots(2, 2, figsize=(12, 10))
-    
-    # Discriminator and Generator losses
+
     ax = axes[0, 0]
     if 'd_loss' in history:
         ax.plot(history.get('epoch', range(len(history['d_loss']))), 

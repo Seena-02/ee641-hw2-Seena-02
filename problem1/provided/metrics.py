@@ -158,7 +158,7 @@ def sequence_diversity(patterns):
     if n < 2:
         return 0.0
     
-    patterns_flat = patterns.view(n, -1)
+    patterns_flat = patterns.reshape(n, -1)
     
     # Compute pairwise distances
     distances = []

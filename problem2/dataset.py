@@ -21,7 +21,7 @@ class DrumPatternDataset(Dataset):
         self.split = split
         
         # Load patterns from drum_patterns.npz
-        data_path = os.path.join(data_dir, 'drum_patterns.npz')
+        data_path = os.path.join(data_dir, 'patterns.npz')
         data = np.load(data_path)
         
         # Expected structure:
@@ -30,18 +30,18 @@ class DrumPatternDataset(Dataset):
         # metadata: dict with instrument names, style names
         
         # Split data into train/val
-        n_samples = len(data['patterns'])
+        n_samples = len(data['train_patterns'])
         n_train = int(0.8 * n_samples)
         
         if split == 'train':
-            self.patterns = data['patterns'][:n_train]
-            self.styles = data['styles'][:n_train]
+            self.patterns = data['train_patterns']
+            self.styles = data['train_styles']
         else:
-            self.patterns = data['patterns'][n_train:]
-            self.styles = data['styles'][n_train:]
+            self.patterns = data['val_patterns']
+            self.styles = data['val_styles']
         
         # Load metadata
-        metadata_path = os.path.join(data_dir, 'drum_metadata.json')
+        metadata_path = os.path.join(data_dir, 'patterns.json')
         with open(metadata_path, 'r') as f:
             self.metadata = json.load(f)
         
